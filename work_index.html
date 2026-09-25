@@ -1,0 +1,3046 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- تنظیمات PWA برای نصب روی صفحه اصلی -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="مدیریت کارها">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="مدیریت کارها">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iIzAwMCIgcng9IjMwIi8+PHRleHQgeD0iOTYiIHk9IjEyNSIgZm9udC1zaXplPSI5MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZiI+8J+TiDwvdGV4dD48L3N2Zz4=">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iIzAwMCIgcng9IjMwIi8+PHRleHQgeD0iOTYiIHk9IjEyNSIgZm9udC1zaXplPSI5MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZiI+8J+TiDwvdGV4dD48L3N2Zz4=">
+    
+    <!-- Manifest به صورت Base64 -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"مدیریت کارها","short_name":"مدیریت کارها","start_url":".","display":"standalone","background_color":"%23ffffff","theme_color":"%23000000","orientation":"portrait","lang":"fa","dir":"rtl","icons":[{"src":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iIzAwMCIgcng9IjMwIi8+PHRleHQgeD0iOTYiIHk9IjEyNSIgZm9udC1zaXplPSI5MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZiI+8J+TiDwvdGV4dD48L3N2Zz4=","sizes":"192x192","type":"image/svg+xml","purpose":"any"},{"src":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iIzAwMCIgcng9IjMwIi8+PHRleHQgeD0iOTYiIHk9IjEyNSIgZm9udC1zaXplPSI5MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZiI+8J+TiDwvdGV4dD48L3N2Zz4=","sizes":"512x512","type":"image/svg+xml","purpose":"any"}]}'>
+    
+    <title>مدیریت کارها</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+        :root {
+            --primary-color: #000;
+            --bg-color: #f4f4f4;
+            --card-bg: #fff;
+            --text-color: #111;
+            --border-color: #ddd;
+            --completed-color: #888;
+            --action-color: #555;
+            --danger-color: #d9534f;
+            --timer-color: #0275d8;
+            --expired-color: #999;
+            --success-color: #2e7d32;
+            --success-bg: #e8f5e9;
+            --warning-color: #f57c00;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Vazirmatn', Tahoma, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0; padding: 0;
+            display: flex; justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            overscroll-behavior: contain;
+        }
+
+        .app-container {
+            width: 100%; max-width: 600px;
+            background-color: var(--card-bg);
+            display: flex; flex-direction: column;
+            height: 100vh;
+            height: 100dvh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        /* دکمه نصب - استایل پیش‌فرض مخفی، فقط با کلاس show نمایش داده می‌شود */
+        .install-banner {
+            display: none;
+            background: linear-gradient(135deg, #000 0%, #333 100%);
+            color: #fff;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.8rem;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .install-banner.show { display: flex; }
+
+        .install-banner span {
+            flex: 1;
+            text-align: right;
+        }
+
+        .install-banner button {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 0.78rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .install-banner .close-install {
+            background: transparent;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 6px 10px;
+            font-size: 0.8rem;
+        }
+
+        .header {
+            padding: 12px 15px;
+            border-bottom: 2px solid var(--primary-color);
+            background: #fff;
+            z-index: 10;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .header-title {
+            text-align: right;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .header-title h1 {
+            font-family: 'Playfair Display', 'Vazirmatn', serif;
+            font-size: 1.2rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .header-title p {
+            font-size: 0.7rem;
+            margin: 3px 0 0 0;
+            color: #666;
+            font-style: italic;
+        }
+
+        .stats-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 6px 10px;
+            flex-shrink: 0;
+        }
+
+        .stats-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-size: 0.65rem;
+            color: #333;
+            text-align: right;
+            line-height: 1.4;
+        }
+
+        .stats-info .stat-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .stats-info .stat-value {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .chart-container {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+        }
+
+        .chart-container svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-container .chart-bg {
+            fill: none;
+            stroke: #e0e0e0;
+            stroke-width: 3;
+        }
+
+        .chart-container .chart-progress {
+            fill: none;
+            stroke: var(--primary-color);
+            stroke-width: 3;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.6s ease;
+        }
+
+        .chart-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.65rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .date-row {
+            text-align: center;
+            margin-top: 8px;
+        }
+        .date-box {
+            font-size: 0.7rem;
+            background: var(--primary-color);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .tabs { display: flex; background: #eee; border-bottom: 1px solid var(--border-color); overflow-x: auto; }
+        .tab-btn { flex: 1; padding: 12px 5px; background: none; border: none; font-family: 'Vazirmatn', sans-serif; font-size: 0.8rem; font-weight: bold; color: #666; cursor: pointer; transition: all 0.3s; border-bottom: 3px solid transparent; white-space: nowrap; min-width: 70px; }
+        .tab-btn.active { color: var(--primary-color); background: #fff; border-bottom: 3px solid var(--primary-color); }
+
+        .tab-content { flex: 1; overflow-y: auto; padding: 15px; display: none; background: #fff; }
+        .tab-content.active { display: block; }
+
+        /* تسک‌ها */
+        .add-task-form { display: flex; gap: 8px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed var(--border-color); }
+        .add-task-form input { flex: 1; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-family: 'Vazirmatn', sans-serif; font-size: 0.9rem; outline: none; }
+        .add-task-form button { padding: 0 15px; background: var(--primary-color); color: #fff; border: none; border-radius: 6px; font-size: 1.2rem; cursor: pointer; }
+
+        .task-item {
+            display: flex; align-items: center; flex-wrap: wrap;
+            padding: 8px 5px; border-bottom: 1px solid #f0f0f0;
+            background: #fff; transition: background 0.2s;
+        }
+        
+        .task-main { display: flex; align-items: center; flex: 1; min-width: 0; }
+        .task-main input[type="checkbox"] { margin-left: 10px; width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary-color); flex-shrink: 0; }
+        
+        .task-text-container { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+        .task-text { font-size: 0.9rem; line-height: 1.4; word-break: break-word; }
+        .task-item.completed .task-text { text-decoration: line-through; color: var(--completed-color); }
+        
+        .task-meta { display: flex; gap: 10px; font-size: 0.7rem; margin-top: 4px; align-items: center; flex-wrap: wrap; }
+        .task-date { color: var(--danger-color); font-weight: bold; }
+        
+        .task-timer-live { color: var(--timer-color); font-weight: bold; font-family: monospace; font-size: 0.8rem; background: #eef7ff; padding: 2px 5px; border-radius: 4px; }
+        .task-timer-expired { color: var(--expired-color); font-weight: normal; font-family: monospace; font-size: 0.65rem; background: #f5f5f5; padding: 2px 5px; border-radius: 4px; }
+
+        .task-actions { display: flex; align-items: center; gap: 2px; margin-right: auto; }
+        .action-btn {
+            background: none; border: none; cursor: pointer; font-size: 0.9rem;
+            color: var(--action-color); padding: 6px; border-radius: 4px;
+            opacity: 0.8; transition: all 0.2s;
+        }
+        .action-btn:hover { opacity: 1; background: #f0f0f0; }
+        .action-btn.delete { color: var(--danger-color); }
+        .action-btn.drag { cursor: grab; font-size: 1.1rem; }
+        .action-btn.drag:active { cursor: grabbing; }
+
+        .dragging { opacity: 0.5; background: #e0e0e0; }
+        .drag-over { border-top: 2px solid var(--primary-color); }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #aaa;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        /* یادداشت‌ها */
+        .add-note-form {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .add-note-form input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .add-note-form button {
+            padding: 0 15px;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .note-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .note-card:hover {
+            background: #fafafa;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        .note-card.dragging { opacity: 0.5; }
+        .note-card.drag-over { border-top: 3px solid var(--primary-color); }
+
+        .note-drag-handle {
+            cursor: grab;
+            font-size: 1.1rem;
+            color: #999;
+            padding: 4px;
+            user-select: none;
+            flex-shrink: 0;
+        }
+        .note-drag-handle:active { cursor: grabbing; }
+
+        .note-preview {
+            flex: 1;
+            min-width: 0;
+        }
+        .note-preview-title {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .note-preview-text {
+            font-size: 0.8rem;
+            color: #888;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .note-delete-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--danger-color);
+            padding: 6px;
+            border-radius: 4px;
+            opacity: 0.6;
+            flex-shrink: 0;
+        }
+        .note-delete-btn:hover { opacity: 1; background: #ffeaea; }
+
+        .note-editor-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .note-editor {
+            min-height: 200px;
+            max-height: 50vh;
+            overflow-y: auto;
+            padding: 12px 14px;
+            font-family: 'Vazirmatn', Tahoma, sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            outline: none;
+            direction: rtl;
+            text-align: right;
+            word-break: break-word;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: #fff;
+            margin-bottom: 10px;
+        }
+
+        .note-editor:empty::before {
+            content: 'اینجا بنویسید...';
+            color: #aaa;
+            pointer-events: none;
+        }
+
+        .note-editor ul, .note-editor ol {
+            padding-right: 25px;
+            margin: 5px 0;
+        }
+        .note-editor li { margin-bottom: 3px; }
+
+        .note-editor .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin: 4px 0;
+        }
+        .note-editor .checklist-item input[type="checkbox"] {
+            margin-top: 5px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+            flex-shrink: 0;
+        }
+        .note-editor .checklist-item .checklist-text {
+            flex: 1;
+            outline: none;
+            min-width: 0;
+        }
+        .note-editor .checklist-item input[type="checkbox"]:checked + .checklist-text {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .notes-toolbar-bottom {
+            display: flex;
+            gap: 4px;
+            padding: 6px;
+            background: #f8f8f8;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            justify-content: center;
+        }
+
+        .notes-toolbar-bottom button {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px 8px;
+            cursor: pointer;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 0.75rem;
+            min-width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            color: #333;
+        }
+        .notes-toolbar-bottom button:hover { background: #e8e8e8; }
+        .notes-toolbar-bottom button:active { background: var(--primary-color); color: #fff; }
+        .notes-toolbar-bottom .separator { width: 1px; background: #ddd; margin: 0 2px; flex-shrink: 0; }
+
+        /* تب بازدید */
+        .visit-section {
+            margin-bottom: 25px;
+        }
+
+        .visit-section-title {
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 10px;
+            background: var(--primary-color);
+            color: #fff;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .visit-section-title .title-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .visit-section-title .subtitle {
+            font-size: 0.7rem;
+            opacity: 0.85;
+            font-weight: normal;
+        }
+
+        .visit-section-title button {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.5);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+
+        .visit-section-title button:hover { background: rgba(255,255,255,0.3); }
+
+        .checklist-table-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        #checklistScreenshotArea {
+            background: #fff;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .screenshot-header {
+            text-align: center;
+            padding: 10px;
+            border-bottom: 2px solid #000;
+            margin-bottom: 10px;
+        }
+
+        .screenshot-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .screenshot-header p {
+            margin: 5px 0 0 0;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        .checklist-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 500px;
+        }
+
+        .checklist-table th {
+            background: #f0f0f0;
+            padding: 8px 5px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #333;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .checklist-table td {
+            padding: 8px 5px;
+            font-size: 0.75rem;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+            min-width: 60px;
+            height: 40px;
+        }
+
+        .checklist-table td:first-child {
+            background: #fafafa;
+            font-weight: bold;
+            text-align: right;
+            padding-right: 10px;
+            cursor: default;
+            min-width: 120px;
+        }
+
+        .checklist-table td.cell-check {
+            background: #e8f5e9;
+            color: var(--success-color);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .checklist-table td.cell-cross {
+            background: #ffebee;
+            color: var(--danger-color);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .checklist-table td:not(:first-child):active {
+            background: #e0e0e0;
+        }
+
+        .store-control-section {
+            margin-top: 20px;
+        }
+
+        .personnel-box {
+            background: #f8f9fa;
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .personnel-box h4 {
+            margin: 0 0 10px 0;
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .personnel-box h4 .add-personnel-btn {
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        .personnel-row {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr auto;
+            gap: 6px;
+            margin-bottom: 6px;
+            align-items: center;
+        }
+
+        .personnel-row input, .personnel-row select {
+            padding: 6px 8px;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 0.78rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+            background: #fff;
+            width: 100%;
+        }
+
+        .personnel-row input:focus, .personnel-row select:focus {
+            border-color: var(--primary-color);
+        }
+
+        .personnel-row .remove-personnel-btn {
+            background: #ffebee;
+            color: var(--danger-color);
+            border: none;
+            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .personnel-row .remove-personnel-btn:hover { background: #ffcdd2; }
+
+        .store-selector {
+            width: 100%;
+            padding: 12px;
+            font-size: 0.95rem;
+            font-family: 'Vazirmatn', sans-serif;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            margin-bottom: 15px;
+            background: #fff;
+        }
+
+        .store-selector:focus { border-color: var(--primary-color); }
+
+        .indicator-item {
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .indicator-label {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .indicator-input {
+            width: 100%;
+            padding: 8px 10px;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+            margin-bottom: 6px;
+        }
+
+        .indicator-input:focus { border-color: var(--primary-color); }
+
+        .indicator-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+
+        .option-btn {
+            flex: 1;
+            min-width: 70px;
+            padding: 8px 10px;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            color: #555;
+        }
+
+        .option-btn.selected-good {
+            background: var(--success-bg);
+            color: var(--success-color);
+            border-color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .option-btn.selected-bad {
+            background: #ffebee;
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+            font-weight: bold;
+        }
+
+        .option-btn.selected-neutral {
+            background: #e3f2fd;
+            color: #0275d8;
+            border-color: #0275d8;
+            font-weight: bold;
+        }
+
+        .indicator-notes {
+            width: 100%;
+            padding: 6px 8px;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 0.78rem;
+            border: 1px dashed #ccc;
+            border-radius: 6px;
+            outline: none;
+            background: #fff;
+            resize: vertical;
+            min-height: 36px;
+            margin-top: 4px;
+        }
+
+        .indicator-notes:focus { border-color: var(--primary-color); border-style: solid; }
+        .indicator-notes::placeholder { color: #aaa; font-size: 0.75rem; }
+
+        .barcode-drop-zone {
+            min-height: 60px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 8px;
+            background: #fafafa;
+            margin-top: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-content: flex-start;
+            transition: all 0.2s;
+        }
+
+        .barcode-drop-zone.drag-over {
+            border-color: var(--primary-color);
+            background: #f0f0f0;
+        }
+
+        .barcode-drop-zone .placeholder-text {
+            color: #aaa;
+            font-size: 0.75rem;
+            padding: 15px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .barcode-chip {
+            background: var(--primary-color);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            user-select: none;
+        }
+
+        .barcode-chip:active { cursor: grabbing; }
+        .barcode-chip .chip-remove {
+            background: rgba(255,255,255,0.3);
+            border: none;
+            color: #fff;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .barcode-chip .chip-remove:hover { background: rgba(255,255,255,0.5); }
+
+        .save-report-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: opacity 0.2s;
+        }
+
+        .save-report-btn:hover { opacity: 0.85; }
+
+        .saved-report-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .saved-report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .saved-report-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .saved-report-date {
+            font-size: 0.7rem;
+            color: #888;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .report-actions button {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 4px 8px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        .report-actions button:hover { background: #f0f0f0; }
+
+        .report-actions .delete-btn { color: var(--danger-color); }
+
+        .strengths-section, .weaknesses-section {
+            margin-bottom: 10px;
+        }
+
+        .strengths-section h4, .weaknesses-section h4 {
+            font-size: 0.8rem;
+            margin: 0 0 6px 0;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .strengths-section h4 { background: var(--success-bg); color: var(--success-color); }
+        .weaknesses-section h4 { background: #ffebee; color: var(--danger-color); }
+
+        .report-item {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            color: #555;
+            border-right: 2px solid #ddd;
+            margin-bottom: 3px;
+        }
+
+        .report-personnel-info {
+            background: #f0f4ff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 0.72rem;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* پیکربندی */
+        .config-section {
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .config-section h3 {
+            font-size: 1rem;
+            margin: 0 0 12px 0;
+            color: var(--primary-color);
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 8px;
+        }
+
+        .quote-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            background: #fff;
+        }
+        .quote-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.85rem;
+            gap: 8px;
+        }
+        .quote-item:last-child { border-bottom: none; }
+        .quote-item span { flex: 1; word-break: break-word; }
+        .quote-item .quote-actions { display: flex; gap: 5px; }
+        .quote-item .quote-actions button {
+            background: none; border: none; cursor: pointer; font-size: 0.85rem;
+            padding: 4px; border-radius: 4px; opacity: 0.7;
+        }
+        .quote-item .quote-actions button:hover { opacity: 1; background: #f0f0f0; }
+        .quote-item .quote-actions .edit { color: var(--timer-color); }
+        .quote-item .quote-actions .delete { color: var(--danger-color); }
+
+        .add-quote-form { display: flex; gap: 8px; }
+        .add-quote-form input {
+            flex: 1; padding: 8px 10px; border: 1px solid var(--border-color);
+            border-radius: 6px; font-family: 'Vazirmatn', sans-serif; font-size: 0.85rem; outline: none;
+        }
+        .add-quote-form button {
+            padding: 0 12px; background: var(--primary-color); color: #fff;
+            border: none; border-radius: 6px; cursor: pointer; font-size: 1rem;
+        }
+
+        .btn { padding: 10px 15px; border: none; border-radius: 8px; font-family: 'Vazirmatn', sans-serif; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: opacity 0.2s; }
+        .btn:active { opacity: 0.7; }
+        .btn-primary { background: var(--primary-color); color: #fff; }
+        .btn-danger { background: #ffebeb; color: var(--danger-color); }
+        .btn-success { background: var(--success-bg); color: var(--success-color); }
+        .btn-block { width: 100%; display: block; margin-bottom: 8px; }
+        .config-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .config-actions .btn { flex: 1; min-width: 120px; }
+
+        .simple-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        .simple-list-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.85rem;
+            gap: 8px;
+        }
+
+        .simple-list-item:last-child { border-bottom: none; }
+        .simple-list-item span { flex: 1; word-break: break-word; }
+        .simple-list-item button {
+            background: none; border: none; cursor: pointer;
+            padding: 4px; border-radius: 4px; opacity: 0.7; font-size: 0.85rem;
+        }
+        .simple-list-item button:hover { opacity: 1; background: #f0f0f0; }
+        .simple-list-item .delete { color: var(--danger-color); }
+
+        /* پاپ‌آپ */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center;
+            z-index: 1000; padding: 15px;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        .modal-box {
+            background: #fff; width: 100%; max-width: 500px;
+            border-radius: 12px; padding: 18px; text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: popIn 0.2s ease-out;
+            max-height: 95vh; overflow-y: auto;
+        }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .modal-title { font-size: 1.05rem; font-weight: bold; margin-bottom: 15px; color: #333; }
+        
+        .modal-input {
+            width: 100%; padding: 10px; border: 1px solid var(--border-color);
+            border-radius: 6px; font-family: 'Vazirmatn', sans-serif;
+            font-size: 0.95rem; margin-bottom: 12px; outline: none;
+        }
+        .modal-input:focus { border-color: var(--primary-color); }
+
+        .modal-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 15px; }
+        .modal-actions .btn { flex: 1; padding: 10px; font-size: 0.9rem; min-width: 80px; }
+
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 15px; }
+        .calendar-grid button { padding: 8px 0; border: 1px solid #eee; background: #fafafa; border-radius: 4px; cursor: pointer; font-family: 'Vazirmatn', sans-serif; font-size: 0.85rem; transition: all 0.2s; }
+        .calendar-grid button:hover { background: #e0e0e0; }
+        .calendar-grid button.selected { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+
+        .timer-mode-switch { display: flex; gap: 10px; margin-bottom: 15px; background: #f0f0f0; padding: 5px; border-radius: 8px; }
+        .timer-mode-switch button { flex: 1; padding: 8px; border: none; background: none; border-radius: 6px; cursor: pointer; font-family: 'Vazirmatn', sans-serif; font-size: 0.85rem; transition: all 0.2s; }
+        .timer-mode-switch button.active { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-weight: bold; }
+
+        .timer-inputs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .timer-inputs input {
+            width: 70px; padding: 10px; text-align: center; font-size: 1.2rem;
+            border: 2px solid var(--border-color); border-radius: 8px;
+            font-family: monospace; outline: none;
+        }
+        .timer-inputs input:focus { border-color: var(--primary-color); }
+        .timer-inputs span { font-size: 1.5rem; font-weight: bold; align-self: center; }
+
+        .schedule-input { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .schedule-input input {
+            padding: 10px; text-align: center; font-size: 1.2rem;
+            border: 2px solid var(--border-color); border-radius: 8px;
+            font-family: monospace; outline: none; width: 120px;
+        }
+        .schedule-input input:focus { border-color: var(--primary-color); }
+        .schedule-note { font-size: 0.75rem; color: #888; margin-bottom: 15px; }
+
+        .tab-content::-webkit-scrollbar { width: 5px; }
+        .tab-content::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+
+        @media (max-width: 420px) {
+            .header-title h1 { font-size: 1rem; }
+            .header-title p { font-size: 0.65rem; }
+            .stats-card { padding: 5px 8px; gap: 8px; }
+            .stats-info { font-size: 0.6rem; }
+            .chart-container { width: 44px; height: 44px; }
+            .chart-text { font-size: 0.6rem; }
+            .tab-btn { font-size: 0.7rem; padding: 10px 3px; min-width: 55px; }
+            .notes-toolbar-bottom button { padding: 4px 6px; min-width: 28px; height: 28px; font-size: 0.7rem; }
+            .checklist-table td { font-size: 0.65rem; min-width: 50px; padding: 5px 2px; }
+            .checklist-table th { font-size: 0.65rem; padding: 6px 2px; }
+            .checklist-table td:first-child { min-width: 90px; font-size: 0.65rem; }
+            .personnel-row { grid-template-columns: 1.5fr 1fr 1fr auto; gap: 4px; }
+            .personnel-row input, .personnel-row select { font-size: 0.7rem; padding: 5px 6px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- بنر نصب -->
+    <div class="install-banner" id="installBanner">
+        <span>📲 این برنامه را روی صفحه اصلی نصب کنید</span>
+        <button onclick="installApp()">نصب</button>
+        <button class="close-install" onclick="dismissInstallBanner()">✕</button>
+    </div>
+
+    <div class="header">
+        <div class="header-top">
+            <div class="header-title">
+                <h1>مدیریت کارها</h1>
+                <p id="motivationalQuote">در حال بارگذاری...</p>
+            </div>
+            
+            <div class="stats-card">
+                <div class="stats-info">
+                    <div class="stat-item">
+                        <span>کل:</span>
+                        <span class="stat-value" id="statTotal">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>انجام شده:</span>
+                        <span class="stat-value" id="statDone">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>عملکرد:</span>
+                        <span class="stat-value" id="statPercent">0%</span>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <svg viewBox="0 0 36 36">
+                        <circle class="chart-bg" cx="18" cy="18" r="15.9155"></circle>
+                        <circle class="chart-progress" id="chartProgress" cx="18" cy="18" r="15.9155"
+                            stroke-dasharray="100 100" stroke-dashoffset="100"></circle>
+                    </svg>
+                    <div class="chart-text" id="chartText">0%</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="date-row">
+            <div class="date-box" id="shamsi-date">در حال بارگذاری...</div>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('tasks', event)">📋 تسک‌ها</button>
+        <button class="tab-btn" onclick="switchTab('visit', event)">🏪 بازدید</button>
+        <button class="tab-btn" onclick="switchTab('notes', event)">📝 یادداشت‌ها</button>
+        <button class="tab-btn" onclick="switchTab('config', event)">⚙️ پیکربندی</button>
+    </div>
+
+    <!-- تب تسک‌ها -->
+    <div id="tasks-tab" class="tab-content active">
+        <div class="add-task-form">
+            <input type="text" id="newTaskInput" placeholder="کار جدید..." onkeypress="handleEnter(event)">
+            <button onclick="addNewTask()">+</button>
+        </div>
+        <div id="task-list"></div>
+    </div>
+
+    <!-- تب بازدید -->
+    <div id="visit-tab" class="tab-content">
+        <div class="visit-section">
+            <div class="visit-section-title">
+                <div class="title-text">
+                    <span>🌅 چک‌لیست اقدامات صبحگاهی</span>
+                    <span class="subtitle" id="checklistDateSubtitle">در حال بارگذاری...</span>
+                </div>
+                <button onclick="screenshotChecklist()">📸 اسکرین‌شات</button>
+            </div>
+            <div class="checklist-table-wrapper">
+                <div id="checklistScreenshotArea">
+                    <div class="screenshot-header">
+                        <h3>🌅 چک‌لیست اقدامات صبحگاهی</h3>
+                        <p id="screenshotDateText">در حال بارگذاری...</p>
+                    </div>
+                    <table class="checklist-table" id="checklistTable">
+                        <!-- با جاوااسکریپت پر می‌شود -->
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="visit-section store-control-section">
+            <div class="visit-section-title">
+                <span>🏪 کنترل فروشگاه</span>
+            </div>
+            
+            <div class="personnel-box">
+                <h4>
+                    <span>👥 پرسنل حاضر</span>
+                    <button class="add-personnel-btn" onclick="addPersonnelRow()">+ افزودن نیرو</button>
+                </h4>
+                <div id="personnelContainer"></div>
+            </div>
+
+            <select class="store-selector" id="storeSelector" onchange="loadStoreControls()">
+                <option value="">-- انتخاب فروشگاه --</option>
+            </select>
+
+            <div id="storeControlsContainer">
+                <p style="text-align:center; color:#888; font-size:0.85rem; padding:20px;">
+                    لطفا یک فروشگاه انتخاب کنید.
+                </p>
+            </div>
+
+            <button class="save-report-btn" id="saveReportBtn" style="display:none;" onclick="saveStoreReport()">
+                💾 ذخیره گزارش
+            </button>
+        </div>
+
+        <div class="visit-section">
+            <div class="visit-section-title">
+                <span>📊 گزارشات ذخیره‌شده</span>
+            </div>
+            <div id="savedReportsContainer">
+                <p style="text-align:center; color:#888; font-size:0.85rem; padding:20px;">
+                    هنوز گزارشی ذخیره نشده است.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- تب یادداشت‌ها -->
+    <div id="notes-tab" class="tab-content">
+        <div class="add-note-form">
+            <input type="text" id="newNoteTitle" placeholder="عنوان یادداشت جدید..." onkeypress="handleNoteEnter(event)">
+            <button onclick="addNewNote()">+</button>
+        </div>
+        <div id="notes-list"></div>
+    </div>
+
+    <!-- تب پیکربندی -->
+    <div id="config-tab" class="tab-content">
+        <div class="config-section">
+            <h3>💬 جملات انگیزشی</h3>
+            <div class="add-quote-form">
+                <input type="text" id="newQuoteInput" placeholder="جمله انگیزشی جدید..." onkeypress="handleQuoteEnter(event)">
+                <button onclick="addQuote()">+</button>
+            </div>
+            <div class="quote-list" id="quoteList"></div>
+            <div style="font-size:0.75rem; color:#888; margin-top:8px;">تعداد جملات: <span id="quoteCount">0</span></div>
+        </div>
+
+        <div class="config-section">
+            <h3>🏪 فروشگاه‌ها</h3>
+            <div class="add-quote-form">
+                <input type="text" id="newStoreInput" placeholder="نام فروشگاه جدید..." onkeypress="handleStoreEnter(event)">
+                <button onclick="addStore()">+</button>
+            </div>
+            <div class="simple-list" id="storeList"></div>
+        </div>
+
+        <div class="config-section">
+            <h3>🔖 بارکدها</h3>
+            <div class="add-quote-form">
+                <input type="text" id="newBarcodeName" placeholder="نام کالا..." style="flex:1;">
+                <input type="text" id="newBarcodeCode" placeholder="کد بارکد..." style="flex:1;">
+                <button onclick="addBarcode()">+</button>
+            </div>
+            <div class="simple-list" id="barcodeList"></div>
+        </div>
+
+        <div class="config-section">
+            <h3>📊 شاخص‌های اضافی</h3>
+            <p style="font-size:0.75rem; color:#888; margin-bottom:8px;">شاخص‌های اضافی که به بخش کنترل فروشگاه اضافه می‌شوند.</p>
+            <div class="add-quote-form">
+                <input type="text" id="newIndicatorInput" placeholder="نام شاخص جدید..." onkeypress="handleIndicatorEnter(event)">
+                <button onclick="addIndicator()">+</button>
+            </div>
+            <div class="simple-list" id="indicatorList"></div>
+        </div>
+
+        <div class="config-section">
+            <h3>🔄 ریست کردن برنامه</h3>
+            <p style="font-size:0.8rem; color:#555; margin-bottom:12px;">تمام داده‌ها به حالت اولیه بازمی‌گردند.</p>
+            <button class="btn btn-danger btn-block" onclick="openResetModal()">🗑️ ریست کامل برنامه</button>
+        </div>
+
+        <div class="config-section">
+            <h3>💾 پشتیبان‌گیری و بازیابی</h3>
+            <div class="config-actions">
+                <button class="btn btn-primary" onclick="exportData()">📤 اکسپورت داده‌ها</button>
+                <button class="btn btn-success" onclick="document.getElementById('importFile').click()">📥 ایمپورت بکاپ</button>
+            </div>
+            <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importData(event)">
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box" id="modalBox"></div>
+</div>
+
+<script>
+    // ===== مدیریت PWA و نصب =====
+    let deferredPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // نمایش بنر نصب اگر قبلا رد نشده باشد
+        const dismissed = localStorage.getItem('installBannerDismissed');
+        if (!dismissed) {
+            const banner = document.getElementById('installBanner');
+            if (banner) banner.classList.add('show');
+        }
+    });
+
+    window.addEventListener('appinstalled', () => {
+        deferredPrompt = null;
+        const banner = document.getElementById('installBanner');
+        if (banner) {
+            banner.classList.remove('show');
+            banner.style.display = 'none';
+        }
+        console.log('برنامه نصب شد!');
+    });
+
+    function installApp() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('کاربر نصب را پذیرفت');
+                }
+                deferredPrompt = null;
+                const banner = document.getElementById('installBanner');
+                if (banner) {
+                    banner.classList.remove('show');
+                    banner.style.display = 'none';
+                }
+            });
+        } else {
+            // راهنمای دستی برای iOS یا مرورگرهایی که از beforeinstallprompt پشتیبانی نمی‌کنند
+            alert('برای نصب: از منوی مرورگر گزینه "Add to Home Screen" یا "نصب برنامه" را انتخاب کنید.');
+        }
+    }
+
+    // تابع تصحیح شده برای بستن بنر نصب
+    function dismissInstallBanner() {
+        const banner = document.getElementById('installBanner');
+        if (banner) {
+            banner.classList.remove('show');
+            banner.style.display = 'none'; // پنهان‌سازی مستقیم برای اطمینان
+        }
+        localStorage.setItem('installBannerDismissed', 'true');
+    }
+
+    // تشخیص حالت standalone (نصب شده)
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+        const banner = document.getElementById('installBanner');
+        if (banner) banner.style.display = 'none';
+    }
+
+    // ===== پایان مدیریت PWA =====
+
+    // جملات انگیزشی
+    const initialQuotes = [
+        "کمال دشمن خوب است. کاری که تمام شده، از کاری که بی‌نقص ولی ناتمام است بهتر است.",
+        "پیشرفت، نه کمال.",
+        "به جای بی‌نقص بودن، به دنبال بهتر شدن باش.",
+        "هیچ‌کس کامل نیست. تلاش کن، اما خودت را برای اشتباهات سرزنش نکن.",
+        "کار انجام شده، بهترین کار است.",
+        "اگر منتظر زمان مناسب باشی، هیچ‌وقت شروع نمی‌کنی. الان شروع کن.",
+        "نود درصد کار انجام شده، بهتر از صد درصد کار انجام نشده است.",
+        "خودت را ببخش که کامل نیستی. هیچ‌کس کامل نیست.",
+        "اجازه بده کارت ناقص باشد، اما حتماً تمامش کن.",
+        "کمال‌گرایی، دشمن پیشرفت است.",
+        "به جای اینکه بهترین باشی، بهترین نسخه خودت باش.",
+        "یک قدم ناقص، بهتر از هزار قدم خیالی است.",
+        "کامل نبودن، شکست نیست. تسلیم شدن، شکست است.",
+        "با خودت مهربان باش. تو در حال یادگیری هستی.",
+        "کارها را تمام کن، نه کامل. سپس بهترش کن.",
+        "بدون تمرکز، هیچ کار بزرگی انجام نمی‌شود.",
+        "کار عمیق، سوپرپاور قرن بیست و یکم است.",
+        "تمرکز، تنها راه رسیدن به تسلط است.",
+        "به جای چند کار همزمان، یک کار را با تمام وجود انجام بده.",
+        "کیفیت کار، به کیفیت تمرکز تو بستگی دارد.",
+        "زمانی که کاملاً روی یک کار متمرکز می‌شوی، معجزه اتفاق می‌افتد.",
+        "کار عمیق، ارزشمندترین مهارت زمانه ماست.",
+        "بدون حواس‌پرتی کار کن. نتیجه شگفت‌انگیز خواهد بود.",
+        "بهترین ایده‌ها در سکوت و تمرکز عمیق متولد می‌شوند.",
+        "تمرکز، عضله‌ای است که باید تمرین شود.",
+        "هر روز چند ساعت کار عمیق، تو را از بقیه متمایز می‌کند.",
+        "گوشی را کنار بگذار. دنیا می‌تواند منتظر بماند.",
+        "کار عمیق، پادزهر زندگی سطحی است.",
+        "خودت را در کار غرق کن، نه در حواس‌پرتی.",
+        "تنها با تمرکز عمیق می‌توانی کارهای استثنایی خلق کنی.",
+        "سکوت، بهترین دوست تمرکز است.",
+        "از منطقه راحتی خارج شو و در کار عمیق غرق شو.",
+        "کار عمیق، نه فقط یک مهارت، یک سبک زندگی است.",
+        "تمرکز، کلید درهای بسته است.",
+        "یک ساعت کار عمیق، ارزش یک روز کار پراکنده را دارد.",
+        "بدون تمرکز، استعداد هدر می‌رود.",
+        "کار عمیق، بهترین سرمایه‌گذاری روی آینده است.",
+        "خودت را از دنیای پرهیاهو جدا کن و کارت را انجام بده.",
+        "تمرکز عمیق، هنر زندگی در لحظه است.",
+        "در سکوت و تمرکز، همه چیز ممکن است.",
+        "تنها راه انجام کارهای بزرگ، عشق به کاری است که انجام می‌دهی. — استیو جابز",
+        "موفقیت، توانایی رفتن از شکستی به شکست دیگر بدون از دست دادن اشتیاق است. — وینستون چرچیل",
+        "بهترین زمان برای کاشتن درخت، بیست سال پیش بود. دومین بهترین زمان، همین حالاست.",
+        "زندگی آن چیزی است که وقتی مشغول برنامه‌ریزی برای چیزهای دیگر هستی، اتفاق می‌افتد. — جان لنون",
+        "دیوانگی نیست که کارها را بارها و بارها تکرار کنی و انتظار نتیجه متفاوت داشته باشی. — آلبرت انیشتین",
+        "موفقیت یعنی از شکست به شکست رفتن، بدون از دست دادن شور و شوق. — وینستون چرچیل",
+        "آنچه ما هستیم، نتیجه آنچه فکر می‌کنیم است. — بودا",
+        "آینده متعلق به کسانی است که به زیبایی رویاهایشان باور دارند. — النور روزولت",
+        "زندگی ۱۰٪ چیزی است که برایت اتفاق می‌افتد و ۹۰٪ نحوه واکنش تو به آن است. — چارلز سوایندول",
+        "بزرگ‌ترین افتخار ما در هرگز زمین نخوردن نیست، در هر بار بلند شدن پس از زمین خوردن است. — کنفوسیوس",
+        "باور داشته باش که می‌توانی، و نیمی از راه را رفته‌ای. — تئودور روزولت",
+        "تنها چیزی که باید از آن بترسیم، خود ترس است. — فرانکلین روزولت",
+        "اگر می‌خواهی کسی را بشناسی، به رفتارش نگاه کن نه حرفش.",
+        "شادی، وقتی است که آنچه فکر می‌کنی، آنچه می‌گویی و آنچه انجام می‌دهی، هماهنگ باشند. — گاندی",
+        "برای اینکه زندگی را تغییر دهی، باید خودت را تغییر دهی.",
+        "سفر هزار مایلی با یک قدم شروع می‌شود. — لائوتسه",
+        "کار امروز را به فردا مینداز.",
+        "آن‌که می‌خواهد، می‌تواند. آن‌که نمی‌خواهد، بهانه می‌آورد.",
+        "هر روزت را طوری زندگی کن که انگار آخرین روزت است. — استیو جابز",
+        "زمان شما محدود است، آن را با زندگی کردن در زندگی دیگران هدر ندهید. — استیو جابز",
+        "خودت را باور کن و همه چیز ممکن می‌شود.",
+        "زندگی زیباست، برای دیدنش باید چشم داشت.",
+        "هیچ‌وقت برای شروع دیر نیست.",
+        "وقتی برای چیزهای مهم وقت بگذاری، زندگی‌ات تغییر می‌کند.",
+        "خودت را دوست داشته باش، این بزرگ‌ترین هدیه به خودت است.",
+        "کارهای بزرگ، با قدم‌های کوچک شروع می‌شوند.",
+        "بهترین انتقام، موفقیت است.",
+        "اگر نمی‌توانی پرواز کنی، بدو. اگر نمی‌توانی بدوی، راه برو. اگر نمی‌توانی راه بروی، بخز. اما هر طور شده به جلو حرکت کن. — مارتین لوتر کینگ",
+        "باور، نقطه شروع همه کارهای بزرگ است.",
+        "آن‌چه در ذهن می‌توانی تصور کنی، می‌توانی به دست آوری. — ناپلئون هیل",
+        "زندگی، ۱۰٪ اتفاقاتی است که می‌افتد و ۹۰٪ نحوه برخورد تو با آن‌هاست.",
+        "هیچ باد موافقی برای کسی که مقصدش را نمی‌داند نمی‌وزد. — سنکا",
+        "آرام باش و ادامه بده.",
+        "برای رسیدن به چیزهایی که هرگز نداشته‌ای، باید کارهایی را انجام دهی که هرگز انجام نداده‌ای.",
+        "به خودت ایمان داشته باش، تو بزرگ‌تر از آنی هستی که فکر می‌کنی.",
+        "شروع کن، همین حالا. نه فردا، نه بعداً.",
+        "زندگی بدون رویا، مثل پرنده‌ای بدون بال است.",
+        "موفقیت، مجموع تلاش‌های کوچک است که هر روز تکرار می‌شوند. — رابرت کولیر",
+        "اگر می‌خواهی زندگی‌ات تغییر کند، خودت باید تغییر کنی.",
+        "هیچ‌کس نمی‌تواند تو را متوقف کند، مگر خودت.",
+        "بهترین روز برای شروع، امروز است.",
+        "تو قادر به انجام کارهای شگفت‌انگیزی هستی.",
+        "زندگی کن، بخند، عشق بورز.",
+        "هر روز یک فرصت جدید است.",
+        "از اشتباهاتت درس بگیر، نه اینکه پشیمان شوی.",
+        "به خودت افتخار کن که تلاش می‌کنی.",
+        "زندگی برای شاد بودن است، نه برای نگرانی.",
+        "تو منحصر به فرد هستی.",
+        "بهترین نسخه خودت باش.",
+        "همه چیز با یک شروع ساده ممکن می‌شود.",
+        "امروز را جشن بگیر، فردا بهتر خواهد بود."
+    ];
+
+    const defaultChecklistIndicators = ["پرینت لیبل", "کنترل شلف", "جت های احتمالی", "رادیو", "مغایرت‌گیری", "سفارش"];
+
+    const POSITIONS = ['سرپرست', 'جانشین', 'پرسنل'];
+    const SHIFTS = ['صبح', 'عصر', 'پیک'];
+
+    let tasks = [];
+    let quotes = [];
+    let notes = [];
+    let stores = [];
+    let barcodes = [];
+    let customIndicators = [];
+    let reports = [];
+    let checklistData = {};
+    let storeControlData = {};
+    let personnelList = [];
+    let activeTimers = {};
+    let draggedTask = null;
+    let draggedNote = null;
+    let draggedBarcode = null;
+    let currentEditingNoteId = null;
+
+    function getShamsiDate() {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Intl.DateTimeFormat('fa-IR', options).format(new Date());
+    }
+
+    function getShamsiDateWithWeekday() {
+        const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+        return new Intl.DateTimeFormat('fa-IR', options).format(new Date());
+    }
+
+    function getShamsiDateTime() {
+        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        return new Intl.DateTimeFormat('fa-IR', options).format(new Date());
+    }
+
+    function handleEnter(e) { if (e.key === 'Enter') addNewTask(); }
+    function handleQuoteEnter(e) { if (e.key === 'Enter') addQuote(); }
+    function handleNoteEnter(e) { if (e.key === 'Enter') addNewNote(); }
+    function handleStoreEnter(e) { if (e.key === 'Enter') addStore(); }
+    function handleIndicatorEnter(e) { if (e.key === 'Enter') addIndicator(); }
+
+    function updateStats() {
+        const total = tasks.length;
+        const done = tasks.filter(t => t.completed).length;
+        const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+
+        document.getElementById('statTotal').textContent = total;
+        document.getElementById('statDone').textContent = done;
+        document.getElementById('statPercent').textContent = percent + '%';
+        document.getElementById('chartText').textContent = percent + '%';
+
+        const circle = document.getElementById('chartProgress');
+        const circumference = 2 * Math.PI * 15.9155;
+        const offset = circumference - (percent / 100) * circumference;
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+        circle.style.strokeDashoffset = offset;
+    }
+
+    function displayRandomQuote() {
+        const el = document.getElementById('motivationalQuote');
+        if (quotes.length > 0) {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            el.textContent = `"${quotes[randomIndex]}"`;
+        } else el.textContent = '';
+    }
+
+    function loadQuotes() {
+        const saved = localStorage.getItem('myQuotesList_v2');
+        if (saved) quotes = JSON.parse(saved);
+        else { quotes = [...initialQuotes]; saveQuotesToStorage(); }
+        renderQuotes();
+        displayRandomQuote();
+    }
+
+    function saveQuotesToStorage() { localStorage.setItem('myQuotesList_v2', JSON.stringify(quotes)); }
+
+    function renderQuotes() {
+        const list = document.getElementById('quoteList');
+        list.innerHTML = '';
+        document.getElementById('quoteCount').textContent = quotes.length;
+
+        quotes.forEach((quote, index) => {
+            const item = document.createElement('div');
+            item.className = 'quote-item';
+            const span = document.createElement('span');
+            span.textContent = quote;
+            const actions = document.createElement('div');
+            actions.className = 'quote-actions';
+
+            const editBtn = document.createElement('button');
+            editBtn.className = 'edit';
+            editBtn.innerHTML = '✏️';
+            editBtn.onclick = () => openEditQuoteModal(index, quote);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete';
+            deleteBtn.innerHTML = '✕';
+            deleteBtn.onclick = () => deleteQuote(index);
+
+            actions.appendChild(editBtn);
+            actions.appendChild(deleteBtn);
+            item.appendChild(span);
+            item.appendChild(actions);
+            list.appendChild(item);
+        });
+    }
+
+    function addQuote() {
+        const input = document.getElementById('newQuoteInput');
+        const text = input.value.trim();
+        if (text) {
+            quotes.unshift(text);
+            saveQuotesToStorage();
+            renderQuotes();
+            input.value = '';
+            displayRandomQuote();
+        }
+    }
+
+    function openEditQuoteModal(index, currentText) {
+        const html = `
+            <div class="modal-title">✏️ ویرایش جمله</div>
+            <input type="text" class="modal-input" id="editQuoteInput" value="${currentText.replace(/"/g, '&quot;')}">
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="saveQuoteEdit(${index})">ذخیره</button>
+                <button class="btn btn-danger" onclick="closeModal()">لغو</button>
+            </div>
+        `;
+        openModal(html);
+        setTimeout(() => document.getElementById('editQuoteInput').focus(), 100);
+    }
+
+    function saveQuoteEdit(index) {
+        const newText = document.getElementById('editQuoteInput').value.trim();
+        if (newText) {
+            quotes[index] = newText;
+            saveQuotesToStorage();
+            renderQuotes();
+            displayRandomQuote();
+        }
+        closeModal();
+    }
+
+    function deleteQuote(index) {
+        if (confirm('این جمله حذف شود؟')) {
+            quotes.splice(index, 1);
+            saveQuotesToStorage();
+            renderQuotes();
+            displayRandomQuote();
+        }
+    }
+
+    function loadTasks() {
+        const savedTasks = localStorage.getItem('myTasksList_v2');
+        if (savedTasks) tasks = JSON.parse(savedTasks);
+        else tasks = [];
+        renderTasks();
+    }
+
+    function saveTasksToStorage() { localStorage.setItem('myTasksList_v2', JSON.stringify(tasks)); }
+
+    function renderTasks() {
+        const listContainer = document.getElementById('task-list');
+        listContainer.innerHTML = '';
+
+        if (tasks.length === 0) {
+            listContainer.innerHTML = `
+                <div class="empty-state">
+                    📋 هنوز تسکی اضافه نکرده‌اید.<br>
+                    از فرم بالا یک کار جدید اضافه کنید.
+                </div>
+            `;
+            updateStats();
+            return;
+        }
+
+        tasks.forEach(task => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'task-item';
+            itemDiv.draggable = true;
+            itemDiv.dataset.id = task.id;
+            if (task.completed) itemDiv.classList.add('completed');
+
+            const mainDiv = document.createElement('div');
+            mainDiv.className = 'task-main';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = task.completed;
+            checkbox.addEventListener('change', (e) => {
+                task.completed = e.target.checked;
+                itemDiv.classList.toggle('completed', task.completed);
+                saveTasksToStorage();
+                updateStats();
+            });
+
+            const textContainer = document.createElement('div');
+            textContainer.className = 'task-text-container';
+
+            const textSpan = document.createElement('span');
+            textSpan.className = 'task-text';
+            textSpan.textContent = task.text;
+            
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'task-meta';
+            
+            const dateSpan = document.createElement('span');
+            dateSpan.className = 'task-date';
+            if (task.date) dateSpan.textContent = `📅 ${task.date}`;
+            
+            const timerSpan = document.createElement('span');
+            timerSpan.id = `timer-${task.id}`;
+            
+            if (task.timerExpired) {
+                timerSpan.className = 'task-timer-expired';
+                timerSpan.textContent = `⏱️ 00:00`;
+            } else if (task.timerEnd) {
+                timerSpan.className = 'task-timer-live';
+                const remaining = Math.max(0, Math.floor((task.timerEnd - Date.now()) / 1000));
+                timerSpan.textContent = `⏱️ ${formatTime(remaining)}`;
+                if (remaining <= 0) {
+                    task.timerExpired = true;
+                    task.timerEnd = null;
+                    task.timerTotal = 0;
+                    timerSpan.className = 'task-timer-expired';
+                    timerSpan.textContent = `⏱️ 00:00`;
+                    saveTasksToStorage();
+                }
+            }
+
+            metaDiv.appendChild(dateSpan);
+            metaDiv.appendChild(timerSpan);
+            textContainer.appendChild(textSpan);
+            textContainer.appendChild(metaDiv);
+            mainDiv.appendChild(checkbox);
+            mainDiv.appendChild(textContainer);
+
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'task-actions';
+
+            const dragBtn = document.createElement('button');
+            dragBtn.className = 'action-btn drag';
+            dragBtn.innerHTML = '☰';
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'action-btn';
+            copyBtn.innerHTML = '📋';
+            copyBtn.onclick = () => openCopyModal(task.text);
+
+            const editBtn = document.createElement('button');
+            editBtn.className = 'action-btn';
+            editBtn.innerHTML = '✏️';
+            editBtn.onclick = () => openEditModal(task.id, task.text);
+
+            const dateBtn = document.createElement('button');
+            dateBtn.className = 'action-btn';
+            dateBtn.innerHTML = '📅';
+            dateBtn.onclick = () => openDateModal(task.id, task.date);
+
+            const timerBtn = document.createElement('button');
+            timerBtn.className = 'action-btn';
+            timerBtn.innerHTML = '⏱️';
+            timerBtn.onclick = () => openTimerModal(task.id);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'action-btn delete';
+            deleteBtn.innerHTML = '✕';
+            deleteBtn.onclick = () => openDeleteModal(task.id);
+
+            actionsDiv.appendChild(dragBtn);
+            actionsDiv.appendChild(copyBtn);
+            actionsDiv.appendChild(editBtn);
+            actionsDiv.appendChild(dateBtn);
+            actionsDiv.appendChild(timerBtn);
+            actionsDiv.appendChild(deleteBtn);
+
+            itemDiv.appendChild(mainDiv);
+            itemDiv.appendChild(actionsDiv);
+
+            itemDiv.addEventListener('dragstart', handleTaskDragStart);
+            itemDiv.addEventListener('dragover', handleTaskDragOver);
+            itemDiv.addEventListener('drop', handleTaskDrop);
+            itemDiv.addEventListener('dragend', handleTaskDragEnd);
+
+            listContainer.appendChild(itemDiv);
+        });
+
+        updateStats();
+    }
+
+    function addNewTask() {
+        const input = document.getElementById('newTaskInput');
+        const text = input.value.trim();
+        if (text) {
+            const newTask = { id: 'task-' + Date.now(), text: text, completed: false, date: null, timerEnd: null, timerTotal: 0, timerExpired: false };
+            tasks.unshift(newTask);
+            saveTasksToStorage();
+            renderTasks();
+            input.value = '';
+            input.focus();
+        }
+    }
+
+    function openModal(contentHTML) {
+        const overlay = document.getElementById('modalOverlay');
+        const box = document.getElementById('modalBox');
+        box.innerHTML = contentHTML;
+        overlay.classList.add('active');
+    }
+
+    function closeModal() { 
+        document.getElementById('modalOverlay').classList.remove('active');
+        if (currentEditingNoteId) {
+            saveCurrentNote();
+            currentEditingNoteId = null;
+        }
+    }
+
+    function openCopyModal(text) {
+        const html = `
+            <div class="modal-title">📋 کپی تسک</div>
+            <p style="font-size:0.85rem; color:#555; margin-bottom:15px;">متن تسک: "${text}"</p>
+            <label style="font-size:0.9rem; display:block; margin-bottom:8px;">تعداد کپی:</label>
+            <input type="number" class="modal-input" id="copyCountInput" value="1" min="1" max="50">
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="doCopy('${text.replace(/'/g, "\\'")}')">کپی کن</button>
+                <button class="btn btn-danger" onclick="closeModal()">لغو</button>
+            </div>
+        `;
+        openModal(html);
+        setTimeout(() => document.getElementById('copyCountInput').select(), 100);
+    }
+
+    function doCopy(text) {
+        const count = parseInt(document.getElementById('copyCountInput').value) || 1;
+        if (count < 1) { alert('تعداد باید حداقل ۱ باشد!'); return; }
+        if (count > 50) { alert('حداکثر ۵۰ عدد مجاز است!'); return; }
+
+        for (let i = 0; i < count; i++) {
+            const newTask = {
+                id: 'copy-' + Date.now() + '-' + i, text: text, completed: false,
+                date: null, timerEnd: null, timerTotal: 0, timerExpired: false
+            };
+            tasks.unshift(newTask);
+        }
+        saveTasksToStorage();
+        renderTasks();
+        closeModal();
+        alert(`${count} تسک کپی شد!`);
+    }
+
+    function openEditModal(id, currentText) {
+        const html = `
+            <div class="modal-title">✏️ ویرایش تسک</div>
+            <input type="text" class="modal-input" id="editTaskInput" value="${currentText.replace(/"/g, '&quot;')}">
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="saveEdit('${id}')">ذخیره</button>
+                <button class="btn btn-danger" onclick="closeModal()">لغو</button>
+            </div>
+        `;
+        openModal(html);
+        setTimeout(() => document.getElementById('editTaskInput').focus(), 100);
+    }
+
+    function saveEdit(id) {
+        const newText = document.getElementById('editTaskInput').value.trim();
+        if (newText) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.text = newText;
+                saveTasksToStorage();
+                renderTasks();
+            }
+        }
+        closeModal();
+    }
+
+    function openDateModal(id, currentDate) {
+        const now = new Date();
+        const currentShamsi = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' }).format(now);
+        
+        let calendarHTML = '<div class="calendar-grid">';
+        for (let i = -5; i <= 30; i++) {
+            const d = new Date(now);
+            d.setDate(now.getDate() + i);
+            const shamsi = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' }).format(d);
+            const isSelected = (currentDate === shamsi) ? 'selected' : '';
+            calendarHTML += `<button class="${isSelected}" onclick="selectDate('${id}', '${shamsi}')">${shamsi.split(' ')[0]}</button>`;
+        }
+        calendarHTML += '</div>';
+
+        const html = `
+            <div class="modal-title">📅 انتخاب تاریخ (${currentShamsi})</div>
+            ${calendarHTML}
+            <div class="modal-actions">
+                <button class="btn btn-danger" onclick="removeDate('${id}')">حذف تاریخ</button>
+                <button class="btn btn-primary" onclick="closeModal()">بستن</button>
+            </div>
+        `;
+        openModal(html);
+    }
+
+    function selectDate(id, shamsiDate) {
+        const task = tasks.find(t => t.id === id);
+        if (task) { task.date = shamsiDate; saveTasksToStorage(); renderTasks(); }
+        closeModal();
+    }
+
+    function removeDate(id) {
+        const task = tasks.find(t => t.id === id);
+        if (task) { task.date = null; saveTasksToStorage(); renderTasks(); }
+        closeModal();
+    }
+
+    function openTimerModal(id) {
+        const task = tasks.find(t => t.id === id);
+        let defaultMin = 25, defaultSec = 0;
+        if (task.timerTotal > 0) {
+            defaultMin = Math.floor(task.timerTotal / 60);
+            defaultSec = task.timerTotal % 60;
+        }
+        const now = new Date();
+        const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+        const html = `
+            <div class="modal-title">⏱️ تنظیم تایمر</div>
+            <div class="timer-mode-switch">
+                <button id="modeManual" class="active" onclick="switchTimerMode('manual')">دستی</button>
+                <button id="modeSchedule" onclick="switchTimerMode('schedule')">ساعت مشخص</button>
+            </div>
+            <div id="manualMode">
+                <div class="timer-inputs">
+                    <input type="number" id="timerMin" value="${defaultMin}" min="0" max="99">
+                    <span>:</span>
+                    <input type="number" id="timerSec" value="${defaultSec}" min="0" max="59">
+                </div>
+            </div>
+            <div id="scheduleMode" style="display:none;">
+                <div class="schedule-input">
+                    <input type="time" id="scheduleTime" value="${currentTime}">
+                </div>
+                <div class="schedule-note">تایمر در این ساعت به صورت خودکار شروع می‌شود (۲۵ دقیقه پیش‌فرض)</div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="startTimer('${id}')">شروع</button>
+                <button class="btn btn-danger" onclick="stopTimer('${id}')">توقف</button>
+                <button class="btn btn-danger" onclick="closeModal()">بستن</button>
+            </div>
+        `;
+        openModal(html);
+    }
+
+    function switchTimerMode(mode) {
+        document.getElementById('modeManual').classList.toggle('active', mode === 'manual');
+        document.getElementById('modeSchedule').classList.toggle('active', mode === 'schedule');
+        document.getElementById('manualMode').style.display = (mode === 'manual') ? 'block' : 'none';
+        document.getElementById('scheduleMode').style.display = (mode === 'schedule') ? 'block' : 'none';
+    }
+
+    function startTimer(id) {
+        const task = tasks.find(t => t.id === id);
+        if (!task) return;
+        const isManual = document.getElementById('modeManual').classList.contains('active');
+        
+        if (isManual) {
+            const min = parseInt(document.getElementById('timerMin').value) || 0;
+            const sec = parseInt(document.getElementById('timerSec').value) || 0;
+            const totalSeconds = (min * 60) + sec;
+            if (totalSeconds <= 0) { alert('زمان باید بیشتر از صفر باشد!'); return; }
+            if (activeTimers[id]) clearInterval(activeTimers[id]);
+
+            task.timerTotal = totalSeconds;
+            task.timerEnd = Date.now() + (totalSeconds * 1000);
+            task.timerExpired = false;
+            saveTasksToStorage();
+
+            activeTimers[id] = setInterval(() => {
+                const remaining = Math.max(0, Math.floor((task.timerEnd - Date.now()) / 1000));
+                const timerSpan = document.getElementById(`timer-${id}`);
+                if (timerSpan) timerSpan.textContent = `⏱️ ${formatTime(remaining)}`;
+                if (remaining <= 0) {
+                    clearInterval(activeTimers[id]);
+                    delete activeTimers[id];
+                    task.timerEnd = null;
+                    task.timerTotal = 0;
+                    task.timerExpired = true;
+                    saveTasksToStorage();
+                    alert(`زمان تسک "${task.text}" به پایان رسید!`);
+                    renderTasks();
+                }
+            }, 1000);
+            closeModal();
+            renderTasks();
+        } else {
+            const timeStr = document.getElementById('scheduleTime').value;
+            if (!timeStr) { alert('لطفا ساعت را وارد کنید!'); return; }
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const now = new Date();
+            const scheduledTime = new Date();
+            scheduledTime.setHours(hours, minutes, 0, 0);
+            if (scheduledTime <= now) scheduledTime.setDate(scheduledTime.getDate() + 1);
+
+            const delay = scheduledTime.getTime() - now.getTime();
+            const totalSeconds = 25 * 60;
+
+            task.timerTotal = totalSeconds;
+            task.timerEnd = scheduledTime.getTime() + (totalSeconds * 1000);
+            task.timerExpired = false;
+            saveTasksToStorage();
+            alert(`تایمر برای ساعت ${timeStr} تنظیم شد.`);
+            closeModal();
+
+            setTimeout(() => {
+                if (activeTimers[id]) clearInterval(activeTimers[id]);
+                activeTimers[id] = setInterval(() => {
+                    const remaining = Math.max(0, Math.floor((task.timerEnd - Date.now()) / 1000));
+                    const timerSpan = document.getElementById(`timer-${id}`);
+                    if (timerSpan) timerSpan.textContent = `⏱️ ${formatTime(remaining)}`;
+                    if (remaining <= 0) {
+                        clearInterval(activeTimers[id]);
+                        delete activeTimers[id];
+                        task.timerEnd = null;
+                        task.timerTotal = 0;
+                        task.timerExpired = true;
+                        saveTasksToStorage();
+                        alert(`زمان تسک "${task.text}" به پایان رسید!`);
+                        renderTasks();
+                    }
+                }, 1000);
+                renderTasks();
+            }, delay);
+        }
+    }
+
+    function stopTimer(id) {
+        if (activeTimers[id]) { clearInterval(activeTimers[id]); delete activeTimers[id]; }
+        const task = tasks.find(t => t.id === id);
+        if (task) { task.timerEnd = null; task.timerTotal = 0; task.timerExpired = false; saveTasksToStorage(); }
+        closeModal();
+        renderTasks();
+    }
+
+    function openDeleteModal(id) {
+        const html = `
+            <div class="modal-title">🗑️ حذف تسک</div>
+            <p style="font-size:0.9rem; color:#555; margin-bottom:20px;">آیا مطمئن هستید؟</p>
+            <div class="modal-actions">
+                <button class="btn btn-danger" onclick="confirmDelete('${id}')">بله</button>
+                <button class="btn btn-primary" onclick="closeModal()">لغو</button>
+            </div>
+        `;
+        openModal(html);
+    }
+
+    function confirmDelete(id) {
+        tasks = tasks.filter(t => t.id !== id);
+        if (activeTimers[id]) { clearInterval(activeTimers[id]); delete activeTimers[id]; }
+        saveTasksToStorage();
+        renderTasks();
+        closeModal();
+    }
+
+    function formatTime(seconds) {
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    }
+
+    function handleTaskDragStart(e) {
+        draggedTask = this;
+        this.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleTaskDragOver(e) {
+        e.preventDefault();
+        const target = e.target.closest('.task-item');
+        if (target && target !== draggedTask) target.classList.add('drag-over');
+    }
+
+    function handleTaskDrop(e) {
+        e.preventDefault();
+        const target = e.target.closest('.task-item');
+        if (target && target !== draggedTask) {
+            target.classList.remove('drag-over');
+            const draggedId = draggedTask.dataset.id;
+            const targetId = target.dataset.id;
+            const draggedIndex = tasks.findIndex(t => t.id === draggedId);
+            const targetIndex = tasks.findIndex(t => t.id === targetId);
+            const [movedTask] = tasks.splice(draggedIndex, 1);
+            tasks.splice(targetIndex, 0, movedTask);
+            saveTasksToStorage();
+            renderTasks();
+        }
+    }
+
+    function handleTaskDragEnd() {
+        this.classList.remove('dragging');
+        document.querySelectorAll('.task-item').forEach(el => el.classList.remove('drag-over'));
+        draggedTask = null;
+    }
+
+    function loadNotes() {
+        const saved = localStorage.getItem('myNotesList');
+        if (saved) notes = JSON.parse(saved);
+        else notes = [];
+        renderNotes();
+    }
+
+    function saveNotesToStorage() {
+        localStorage.setItem('myNotesList', JSON.stringify(notes));
+    }
+
+    function renderNotes() {
+        const listContainer = document.getElementById('notes-list');
+        listContainer.innerHTML = '';
+
+        if (notes.length === 0) {
+            listContainer.innerHTML = `
+                <div class="empty-state">
+                    📝 هنوز یادداشتی ندارید.<br>
+                    از فرم بالا یک یادداشت جدید بسازید.
+                </div>
+            `;
+            return;
+        }
+
+        notes.forEach((note) => {
+            const card = document.createElement('div');
+            card.className = 'note-card';
+            card.dataset.id = note.id;
+            card.draggable = true;
+
+            const dragHandle = document.createElement('div');
+            dragHandle.className = 'note-drag-handle';
+            dragHandle.innerHTML = '☰';
+
+            const preview = document.createElement('div');
+            preview.className = 'note-preview';
+
+            const title = document.createElement('div');
+            title.className = 'note-preview-title';
+            title.textContent = note.title || 'بدون عنوان';
+
+            const previewText = document.createElement('div');
+            previewText.className = 'note-preview-text';
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = note.content || '';
+            const plainText = (tempDiv.textContent || tempDiv.innerText || '').trim();
+            previewText.textContent = plainText || 'خالی...';
+
+            preview.appendChild(title);
+            preview.appendChild(previewText);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'note-delete-btn';
+            deleteBtn.innerHTML = '✕';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                deleteNote(note.id);
+            };
+
+            card.appendChild(dragHandle);
+            card.appendChild(preview);
+            card.appendChild(deleteBtn);
+
+            card.addEventListener('click', (e) => {
+                if (e.target === dragHandle || e.target === deleteBtn) return;
+                openNoteEditor(note.id);
+            });
+
+            card.addEventListener('dragstart', (e) => {
+                draggedNote = card;
+                card.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+
+            card.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (draggedNote && draggedNote !== card) card.classList.add('drag-over');
+            });
+
+            card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+
+            card.addEventListener('drop', (e) => {
+                e.preventDefault();
+                card.classList.remove('drag-over');
+                if (draggedNote && draggedNote !== card) {
+                    const draggedId = draggedNote.dataset.id;
+                    const targetId = card.dataset.id;
+                    const draggedIndex = notes.findIndex(n => n.id === draggedId);
+                    const targetIndex = notes.findIndex(n => n.id === targetId);
+                    const [moved] = notes.splice(draggedIndex, 1);
+                    notes.splice(targetIndex, 0, moved);
+                    saveNotesToStorage();
+                    renderNotes();
+                }
+            });
+
+            card.addEventListener('dragend', () => {
+                card.classList.remove('dragging');
+                document.querySelectorAll('.note-card').forEach(c => c.classList.remove('drag-over'));
+                draggedNote = null;
+            });
+
+            listContainer.appendChild(card);
+        });
+    }
+
+    function addNewNote() {
+        const input = document.getElementById('newNoteTitle');
+        const title = input.value.trim();
+        if (title) {
+            const newNote = { id: 'note-' + Date.now(), title: title, content: '' };
+            notes.unshift(newNote);
+            saveNotesToStorage();
+            renderNotes();
+            input.value = '';
+        }
+    }
+
+    function deleteNote(id) {
+        if (confirm('این یادداشت حذف شود؟')) {
+            notes = notes.filter(n => n.id !== id);
+            saveNotesToStorage();
+            renderNotes();
+        }
+    }
+
+    function openNoteEditor(id) {
+        const note = notes.find(n => n.id === id);
+        if (!note) return;
+        currentEditingNoteId = id;
+
+        const html = `
+            <div class="note-editor-wrapper">
+                <input type="text" class="modal-input" id="noteTitleInput" value="${(note.title || '').replace(/"/g, '&quot;')}" placeholder="عنوان یادداشت...">
+                <div class="note-editor" id="noteEditorContent" contenteditable="true">${note.content || ''}</div>
+                <div class="notes-toolbar-bottom">
+                    <button onmousedown="event.preventDefault(); applyFormat('bold')" title="بولد" style="font-weight:bold;">B</button>
+                    <button onmousedown="event.preventDefault(); applyFormat('italic')" title="ایتالیک" style="font-style:italic;">I</button>
+                    <button onmousedown="event.preventDefault(); applyFormat('underline')" title="زیرخط" style="text-decoration:underline;">U</button>
+                    <button onmousedown="event.preventDefault(); applyFormat('strikeThrough')" title="خط‌خورده" style="text-decoration:line-through;">S</button>
+                    <div class="separator"></div>
+                    <button onmousedown="event.preventDefault(); applyFormat('insertUnorderedList')" title="لیست نشانه‌دار">•</button>
+                    <button onmousedown="event.preventDefault(); applyFormat('insertOrderedList')" title="لیست شماره‌دار">1.</button>
+                    <button onmousedown="event.preventDefault(); insertChecklistInEditor()" title="چک‌لیست">✅</button>
+                    <div class="separator"></div>
+                    <button onmousedown="event.preventDefault(); applyFormat('justifyRight')" title="راست‌چین">R</button>
+                    <button onmousedown="event.preventDefault(); applyFormat('justifyCenter')" title="وسط‌چین">C</button>
+                    <button onmousedown="event.preventDefault(); applyFormat('justifyLeft')" title="چپ‌چین">L</button>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="saveCurrentNoteAndClose()">💾 ذخیره و بستن</button>
+                    <button class="btn btn-danger" onclick="closeModalWithoutSaving()">لغو</button>
+                </div>
+            </div>
+        `;
+        openModal(html);
+    }
+
+    function applyFormat(command) {
+        document.execCommand(command, false, null);
+        const editor = document.getElementById('noteEditorContent');
+        if (editor) editor.focus();
+    }
+
+    function insertChecklistInEditor() {
+        const editor = document.getElementById('noteEditorContent');
+        if (!editor) return;
+        editor.focus();
+
+        const checklistItem = document.createElement('div');
+        checklistItem.className = 'checklist-item';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+
+        const textSpan = document.createElement('div');
+        textSpan.className = 'checklist-text';
+        textSpan.contentEditable = 'true';
+        textSpan.textContent = 'آیتم جدید';
+
+        checklistItem.appendChild(checkbox);
+        checklistItem.appendChild(textSpan);
+
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0 && editor.contains(selection.anchorNode)) {
+            const range = selection.getRangeAt(0);
+            range.deleteContents();
+            range.insertNode(checklistItem);
+            range.setStartAfter(checklistItem);
+            range.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        } else {
+            editor.appendChild(checklistItem);
+        }
+
+        const br = document.createElement('br');
+        checklistItem.after(br);
+        textSpan.focus();
+    }
+
+    function saveCurrentNote() {
+        if (!currentEditingNoteId) return;
+        const note = notes.find(n => n.id === currentEditingNoteId);
+        if (!note) return;
+
+        const titleInput = document.getElementById('noteTitleInput');
+        const editor = document.getElementById('noteEditorContent');
+        
+        if (titleInput) note.title = titleInput.value;
+        if (editor) note.content = editor.innerHTML;
+
+        saveNotesToStorage();
+        renderNotes();
+    }
+
+    function saveCurrentNoteAndClose() {
+        saveCurrentNote();
+        currentEditingNoteId = null;
+        document.getElementById('modalOverlay').classList.remove('active');
+    }
+
+    function closeModalWithoutSaving() {
+        currentEditingNoteId = null;
+        document.getElementById('modalOverlay').classList.remove('active');
+    }
+
+    function loadVisitData() {
+        const savedStores = localStorage.getItem('myStoresList');
+        if (savedStores) stores = JSON.parse(savedStores);
+        
+        const savedBarcodes = localStorage.getItem('myBarcodesList');
+        if (savedBarcodes) barcodes = JSON.parse(savedBarcodes);
+        
+        const savedIndicators = localStorage.getItem('myCustomIndicators');
+        if (savedIndicators) customIndicators = JSON.parse(savedIndicators);
+        
+        const savedReports = localStorage.getItem('myReportsList');
+        if (savedReports) reports = JSON.parse(savedReports);
+        
+        const savedChecklist = localStorage.getItem('myChecklistData');
+        if (savedChecklist) checklistData = JSON.parse(savedChecklist);
+        
+        const savedStoreControl = localStorage.getItem('myStoreControlData');
+        if (savedStoreControl) storeControlData = JSON.parse(savedStoreControl);
+        
+        const dateText = getShamsiDateWithWeekday();
+        document.getElementById('checklistDateSubtitle').textContent = '📅 ' + dateText;
+        document.getElementById('screenshotDateText').textContent = '📅 ' + dateText;
+        
+        renderStoreSelector();
+        renderChecklistTable();
+        renderSavedReports();
+        renderStoreList();
+        renderBarcodeList();
+        renderIndicatorList();
+        renderPersonnelRows();
+    }
+
+    function saveVisitData() {
+        localStorage.setItem('myStoresList', JSON.stringify(stores));
+        localStorage.setItem('myBarcodesList', JSON.stringify(barcodes));
+        localStorage.setItem('myCustomIndicators', JSON.stringify(customIndicators));
+        localStorage.setItem('myReportsList', JSON.stringify(reports));
+        localStorage.setItem('myChecklistData', JSON.stringify(checklistData));
+        localStorage.setItem('myStoreControlData', JSON.stringify(storeControlData));
+    }
+
+    function renderChecklistTable() {
+        const table = document.getElementById('checklistTable');
+        const allIndicators = [...defaultChecklistIndicators];
+        
+        if (stores.length === 0) {
+            table.innerHTML = `<tr><td style="padding:20px; text-align:center; color:#888; font-size:0.85rem;">
+                لطفا ابتدا از تب پیکربندی فروشگاه اضافه کنید.
+            </td></tr>`;
+            return;
+        }
+
+        let html = '<thead><tr><th>فروشگاه</th>';
+        allIndicators.forEach(ind => {
+            html += `<th>${ind}</th>`;
+        });
+        html += '</tr></thead><tbody>';
+
+        stores.forEach(store => {
+            html += `<tr><td>${store}</td>`;
+            allIndicators.forEach(ind => {
+                const key = `${store}|${ind}`;
+                const state = checklistData[key];
+                let cellClass = '';
+                let cellContent = '';
+                
+                if (state === true) {
+                    cellClass = 'cell-check';
+                    cellContent = '✔';
+                } else if (state === false) {
+                    cellClass = 'cell-cross';
+                    cellContent = '✘';
+                }
+                
+                html += `<td class="${cellClass}" onclick="toggleChecklist('${store.replace(/'/g, "\\'")}', '${ind.replace(/'/g, "\\'")}')">${cellContent}</td>`;
+            });
+            html += '</tr>';
+        });
+
+        html += '</tbody>';
+        table.innerHTML = html;
+    }
+
+    function toggleChecklist(store, indicator) {
+        const key = `${store}|${indicator}`;
+        const current = checklistData[key];
+        
+        if (current === undefined || current === false) {
+            checklistData[key] = true;
+        } else {
+            checklistData[key] = false;
+        }
+        
+        saveVisitData();
+        renderChecklistTable();
+    }
+
+    function screenshotChecklist() {
+        const element = document.getElementById('checklistScreenshotArea');
+        
+        if (stores.length === 0) {
+            alert('ابتدا فروشگاه اضافه کنید!');
+            return;
+        }
+
+        html2canvas(element, {
+            backgroundColor: '#ffffff',
+            scale: 2,
+            useCORS: true
+        }).then(canvas => {
+            const link = document.createElement('a');
+            const date = new Date().toISOString().slice(0, 10);
+            link.download = `checklist-${date}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }).catch(err => {
+            alert('خطا در تهیه اسکرین‌شات!');
+            console.error(err);
+        });
+    }
+
+    function renderPersonnelRows() {
+        const container = document.getElementById('personnelContainer');
+        if (personnelList.length === 0) {
+            personnelList.push({ name: '', position: '', shift: '' });
+        }
+
+        container.innerHTML = personnelList.map((p, idx) => `
+            <div class="personnel-row">
+                <input type="text" placeholder="نام و نام خانوادگی" value="${(p.name || '').replace(/"/g, '&quot;')}" onchange="updatePersonnel(${idx}, 'name', this.value)">
+                <select onchange="updatePersonnel(${idx}, 'position', this.value)">
+                    <option value="">سمت</option>
+                    ${POSITIONS.map(pos => `<option value="${pos}" ${p.position === pos ? 'selected' : ''}>${pos}</option>`).join('')}
+                </select>
+                <select onchange="updatePersonnel(${idx}, 'shift', this.value)">
+                    <option value="">شیفت</option>
+                    ${SHIFTS.map(s => `<option value="${s}" ${p.shift === s ? 'selected' : ''}>${s}</option>`).join('')}
+                </select>
+                <button class="remove-personnel-btn" onclick="removePersonnelRow(${idx})" title="حذف">✕</button>
+            </div>
+        `).join('');
+    }
+
+    function updatePersonnel(idx, key, value) {
+        if (!personnelList[idx]) personnelList[idx] = {};
+        personnelList[idx][key] = value;
+    }
+
+    function addPersonnelRow() {
+        personnelList.push({ name: '', position: '', shift: '' });
+        renderPersonnelRows();
+    }
+
+    function removePersonnelRow(idx) {
+        if (personnelList.length <= 1) {
+            personnelList[0] = { name: '', position: '', shift: '' };
+        } else {
+            personnelList.splice(idx, 1);
+        }
+        renderPersonnelRows();
+    }
+
+    function renderStoreSelector() {
+        const selector = document.getElementById('storeSelector');
+        selector.innerHTML = '<option value="">-- انتخاب فروشگاه --</option>';
+        stores.forEach(store => {
+            const option = document.createElement('option');
+            option.value = store;
+            option.textContent = store;
+            selector.appendChild(option);
+        });
+    }
+
+    function loadStoreControls() {
+        const storeName = document.getElementById('storeSelector').value;
+        const container = document.getElementById('storeControlsContainer');
+        const saveBtn = document.getElementById('saveReportBtn');
+
+        if (!storeName) {
+            container.innerHTML = '<p style="text-align:center; color:#888; font-size:0.85rem; padding:20px;">لطفا یک فروشگاه انتخاب کنید.</p>';
+            saveBtn.style.display = 'none';
+            return;
+        }
+
+        if (!storeControlData[storeName]) {
+            storeControlData[storeName] = { indicators: {}, barcodes: [] };
+        }
+        const data = storeControlData[storeName];
+
+        let html = '';
+
+        html += `
+            <div class="indicator-item">
+                <label class="indicator-label">🔖 چک موجودی بارکدها</label>
+                <p style="font-size:0.75rem; color:#888; margin-bottom:6px;">بارکدها را از لیست پایین بکشید و اینجا رها کنید:</p>
+                <div class="barcode-drop-zone" id="barcodeDropZone" ondragover="handleBarcodeDragOver(event)" ondragleave="handleBarcodeDragLeave(event)" ondrop="handleBarcodeDrop(event)">
+                    ${data.barcodes.length === 0 ? '<div class="placeholder-text">بارکدها را اینجا رها کنید</div>' : ''}
+                    ${data.barcodes.map((bc) => `
+                        <div class="barcode-chip">
+                            ${bc}
+                            <button class="chip-remove" onclick="removeBarcodeFromZone('${bc.replace(/'/g, "\\'")}')">✕</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <p style="font-size:0.75rem; color:#888; margin-top:8px; margin-bottom:4px;">لیست بارکدهای موجود:</p>
+                <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                    ${barcodes.length === 0 ? '<span style="font-size:0.75rem; color:#aaa;">هیچ بارکدی تعریف نشده</span>' : 
+                        barcodes.map(bc => `
+                            <div class="barcode-chip" draggable="true" ondragstart="handleBarcodeDragStart(event, '${(bc.name + ' (' + bc.code + ')').replace(/'/g, "\\'")}')">
+                                ${bc.name} (${bc.code})
+                            </div>
+                        `).join('')
+                    }
+                </div>
+                <textarea class="indicator-notes" rows="2" placeholder="توضیحات..." onchange="updateIndicator('${storeName.replace(/'/g, "\\'")}', 'barcodeNotes', this.value)">${data.indicators.barcodeNotes || ''}</textarea>
+            </div>
+        `;
+
+        html += `
+            <div class="indicator-item">
+                <label class="indicator-label">🖨️ تعداد جت پرینت ثبت نشده</label>
+                <input type="number" class="indicator-input" value="${data.indicators.jetPrintCount || ''}" placeholder="عدد وارد کنید" min="0" onchange="updateIndicator('${storeName.replace(/'/g, "\\'")}', 'jetPrintCount', this.value)">
+                <textarea class="indicator-notes" rows="2" placeholder="توضیحات..." onchange="updateIndicator('${storeName.replace(/'/g, "\\'")}', 'jetPrintNotes', this.value)">${data.indicators.jetPrintNotes || ''}</textarea>
+            </div>
+        `;
+
+        html += `
+            <div class="indicator-item">
+                <label class="indicator-label">🏷️ تعداد لیبل نصب نشده</label>
+                <input type="number" class="indicator-input" value="${data.indicators.labelCount || ''}" placeholder="عدد وارد کنید" min="0" onchange="updateIndicator('${storeName.replace(/'/g, "\\'")}', 'labelCount', this.value)">
+                <textarea class="indicator-notes" rows="2" placeholder="توضیحات..." onchange="updateIndicator('${storeName.replace(/'/g, "\\'")}', 'labelNotes', this.value)">${data.indicators.labelNotes || ''}</textarea>
+            </div>
+        `;
+
+        html += renderCleanlinessOption(storeName, 'personnelAppearance', 'وضعیت آراستگی پرسنل', data.indicators.personnelAppearance, 'personnelAppearanceNotes', data.indicators.personnelAppearanceNotes);
+
+        html += `
+            <div class="indicator-item">
+                <label class="indicator-label">🗑️ وضعیت ضایعات</label>
+                <div class="indicator-options">
+                    <button class="option-btn ${data.indicators.waste === 'good' ? 'selected-good' : ''}" onclick="setIndicatorOption('${storeName.replace(/'/g, "\\'")}', 'waste', 'good')">خوب</button>
+                    <button class="option-btn ${data.indicators.waste === 'bad' ? 'selected-bad' : ''}" onclick="setIndicatorOption('${storeName.replace(/'/g, "\\'")}', 'waste', 'bad')">ضعیف</button>
+                </div>
+                <textarea class="indicator-notes" rows="2" placeholder="توضیحات..." onchange="updateIndicator('${storeName.replace(/'/g, "\\'")}', 'wasteNotes', this.value)">${data.indicators.wasteNotes || ''}</textarea>
+            </div>
+        `;
+
+        html += renderCleanlinessOption(storeName, 'surface', 'وضعیت نظافت سطح', data.indicators.surface, 'surfaceNotes', data.indicators.surfaceNotes);
+        html += renderCleanlinessOption(storeName, 'shelf', 'وضعیت نظافت شلف', data.indicators.shelf, 'shelfNotes', data.indicators.shelfNotes);
+        html += renderCleanlinessOption(storeName, 'product', 'وضعیت نظافت کالا', data.indicators.product, 'productNotes', data.indicators.productNotes);
+        html += renderCleanlinessOption(storeName, 'cashier', 'وضعیت نظافت صندوق', data.indicators.cashier, 'cashierNotes', data.indicators.cashierNotes);
+        html += renderCleanlinessOption(storeName, 'space', 'فضای فروشگاهی', data.indicators.space, 'spaceNotes', data.indicators.spaceNotes);
+
+        html += `
+            <div class="indicator-item">
+                <label class="indicator-label">🏷️ استیکر ذینفعان</label>
+                <div class="indicator-options">
+                    <button class="option-btn ${data.indicators.sticker === 'yes' ? 'selected-good' : ''}" onclick="setIndicatorOption('${storeName.replace(/'/g, "\\'")}', 'sticker', 'yes')">دارد</button>
+                    <button class="option-btn ${data.indicators.sticker === 'no' ? 'selected-bad' : ''}" onclick="setIndicatorOption('${storeName.replace(/'/g, "\\'")}', 'sticker', 'no')">ندارد</button>
+                </div>
+                <textarea class="indicator-notes" rows="2" placeholder="توضیحات..." onchange="updateIndicator('${storeName.replace(/'/g, "\\'")}', 'stickerNotes', this.value)">${data.indicators.stickerNotes || ''}</textarea>
+            </div>
+        `;
+
+        html += `
+            <div class="indicator-item">
+                <label class="indicator-label">📋 وضعیت استند چیتوز و قراردادها</label>
+                <textarea class="indicator-input" rows="3" placeholder="توضیحات..." onchange="updateIndicator('${storeName.replace(/'/g, "\\'")}', 'cheetosNotes', this.value)">${data.indicators.cheetosNotes || ''}</textarea>
+            </div>
+        `;
+
+        customIndicators.forEach((ind, idx) => {
+            const key = `custom_${idx}`;
+            html += `
+                <div class="indicator-item">
+                    <label class="indicator-label">📊 ${ind}</label>
+                    <textarea class="indicator-notes" rows="2" placeholder="توضیحات..." onchange="updateIndicator('${storeName.replace(/'/g, "\\'")}', '${key}', this.value)">${data.indicators[key] || ''}</textarea>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+        saveBtn.style.display = 'block';
+    }
+
+    function renderCleanlinessOption(storeName, key, label, currentValue, notesKey, notesValue) {
+        return `
+            <div class="indicator-item">
+                <label class="indicator-label">🧹 ${label}</label>
+                <div class="indicator-options">
+                    <button class="option-btn ${currentValue === 'good' ? 'selected-good' : ''}" onclick="setIndicatorOption('${storeName.replace(/'/g, "\\'")}', '${key}', 'good')">خوب</button>
+                    <button class="option-btn ${currentValue === 'medium' ? 'selected-neutral' : ''}" onclick="setIndicatorOption('${storeName.replace(/'/g, "\\'")}', '${key}', 'medium')">متوسط</button>
+                    <button class="option-btn ${currentValue === 'bad' ? 'selected-bad' : ''}" onclick="setIndicatorOption('${storeName.replace(/'/g, "\\'")}', '${key}', 'bad')">ضعیف</button>
+                </div>
+                <textarea class="indicator-notes" rows="2" placeholder="توضیحات..." onchange="updateIndicator('${storeName.replace(/'/g, "\\'")}', '${notesKey}', this.value)">${notesValue || ''}</textarea>
+            </div>
+        `;
+    }
+
+    function updateIndicator(storeName, key, value) {
+        if (!storeControlData[storeName]) storeControlData[storeName] = { indicators: {}, barcodes: [] };
+        storeControlData[storeName].indicators[key] = value;
+        saveVisitData();
+    }
+
+    function setIndicatorOption(storeName, key, value) {
+        if (!storeControlData[storeName]) storeControlData[storeName] = { indicators: {}, barcodes: [] };
+        storeControlData[storeName].indicators[key] = value;
+        saveVisitData();
+        loadStoreControls();
+    }
+
+    function handleBarcodeDragStart(e, barcodeText) {
+        e.dataTransfer.setData('text/plain', barcodeText);
+        e.dataTransfer.effectAllowed = 'copy';
+    }
+
+    function handleBarcodeDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+        e.currentTarget.classList.add('drag-over');
+    }
+
+    function handleBarcodeDragLeave(e) {
+        e.currentTarget.classList.remove('drag-over');
+    }
+
+    function handleBarcodeDrop(e) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('drag-over');
+        const barcodeText = e.dataTransfer.getData('text/plain');
+        const storeName = document.getElementById('storeSelector').value;
+        
+        if (!storeName || !barcodeText) return;
+        if (!storeControlData[storeName]) storeControlData[storeName] = { indicators: {}, barcodes: [] };
+        
+        if (!storeControlData[storeName].barcodes.includes(barcodeText)) {
+            storeControlData[storeName].barcodes.push(barcodeText);
+            saveVisitData();
+            loadStoreControls();
+        }
+    }
+
+    function removeBarcodeFromZone(barcodeText) {
+        const storeName = document.getElementById('storeSelector').value;
+        if (!storeName) return;
+        if (storeControlData[storeName]) {
+            storeControlData[storeName].barcodes = storeControlData[storeName].barcodes.filter(b => b !== barcodeText);
+            saveVisitData();
+            loadStoreControls();
+        }
+    }
+
+    function saveStoreReport() {
+        const storeName = document.getElementById('storeSelector').value;
+        if (!storeName) { alert('لطفا فروشگاه انتخاب کنید!'); return; }
+        
+        const data = storeControlData[storeName];
+        if (!data) { alert('داده‌ای برای ذخیره وجود ندارد!'); return; }
+
+        const validPersonnel = personnelList.filter(p => p.name && p.name.trim());
+
+        const strengths = [];
+        const weaknesses = [];
+
+        const ind = data.indicators;
+
+        if (ind.jetPrintCount === '0' || ind.jetPrintCount === 0) strengths.push('جت پرینت ثبت نشده: صفر');
+        else if (ind.jetPrintCount) weaknesses.push(`جت پرینت ثبت نشده: ${ind.jetPrintCount}`);
+        if (ind.jetPrintNotes && ind.jetPrintNotes.trim()) strengths.push(`توضیح جت پرینت: ${ind.jetPrintNotes.trim()}`);
+
+        if (ind.labelCount === '0' || ind.labelCount === 0) strengths.push('لیبل نصب نشده: صفر');
+        else if (ind.labelCount) weaknesses.push(`لیبل نصب نشده: ${ind.labelCount}`);
+        if (ind.labelNotes && ind.labelNotes.trim()) strengths.push(`توضیح لیبل: ${ind.labelNotes.trim()}`);
+
+        if (ind.waste === 'good') strengths.push('وضعیت ضایعات: خوب');
+        else if (ind.waste === 'bad') weaknesses.push('وضعیت ضایعات: ضعیف');
+        if (ind.wasteNotes && ind.wasteNotes.trim()) strengths.push(`توضیح ضایعات: ${ind.wasteNotes.trim()}`);
+
+        const cleanlinessMap = {
+            personnelAppearance: { name: 'آراستگی پرسنل', notes: 'personnelAppearanceNotes' },
+            surface: { name: 'نظافت سطح', notes: 'surfaceNotes' },
+            shelf: { name: 'نظافت شلف', notes: 'shelfNotes' },
+            product: { name: 'نظافت کالا', notes: 'productNotes' },
+            cashier: { name: 'نظافت صندوق', notes: 'cashierNotes' },
+            space: { name: 'فضای فروشگاهی', notes: 'spaceNotes' }
+        };
+        Object.keys(cleanlinessMap).forEach(key => {
+            const item = cleanlinessMap[key];
+            if (ind[key] === 'good') strengths.push(`${item.name}: خوب`);
+            else if (ind[key] === 'medium') weaknesses.push(`${item.name}: متوسط`);
+            else if (ind[key] === 'bad') weaknesses.push(`${item.name}: ضعیف`);
+            if (ind[item.notes] && ind[item.notes].trim()) strengths.push(`توضیح ${item.name}: ${ind[item.notes].trim()}`);
+        });
+
+        if (ind.sticker === 'yes') strengths.push('استیکر ذینفعان: دارد');
+        else if (ind.sticker === 'no') weaknesses.push('استیکر ذینفعان: ندارد');
+        if (ind.stickerNotes && ind.stickerNotes.trim()) strengths.push(`توضیح استیکر: ${ind.stickerNotes.trim()}`);
+
+        if (data.barcodes.length > 0) strengths.push(`چک موجودی بارکدها: ${data.barcodes.length} مورد بررسی شد`);
+        if (ind.barcodeNotes && ind.barcodeNotes.trim()) strengths.push(`توضیح بارکد: ${ind.barcodeNotes.trim()}`);
+
+        if (ind.cheetosNotes && ind.cheetosNotes.trim()) {
+            strengths.push(`استند چیتوز: ${ind.cheetosNotes.trim()}`);
+        }
+
+        customIndicators.forEach((name, idx) => {
+            const val = ind[`custom_${idx}`];
+            if (val && val.trim()) {
+                strengths.push(`${name}: ${val.trim()}`);
+            }
+        });
+
+        const report = {
+            id: 'report-' + Date.now(),
+            storeName: storeName,
+            date: getShamsiDateTime(),
+            personnel: validPersonnel,
+            strengths: strengths,
+            weaknesses: weaknesses,
+            rawData: JSON.parse(JSON.stringify(data))
+        };
+
+        reports.unshift(report);
+        saveVisitData();
+        renderSavedReports();
+        alert('گزارش با موفقیت ذخیره شد!');
+    }
+
+    function renderSavedReports() {
+        const container = document.getElementById('savedReportsContainer');
+        
+        if (reports.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color:#888; font-size:0.85rem; padding:20px;">هنوز گزارشی ذخیره نشده است.</p>';
+            return;
+        }
+
+        container.innerHTML = reports.map(report => `
+            <div class="saved-report-card" id="report-${report.id}">
+                <div class="saved-report-header">
+                    <div>
+                        <div class="saved-report-title">🏪 ${report.storeName}</div>
+                        <div class="saved-report-date">📅 ${report.date}</div>
+                    </div>
+                    <div class="report-actions">
+                        <button onclick="screenshotReport('${report.id}')">📸 اسکرین‌شات</button>
+                        <button class="delete-btn" onclick="deleteReport('${report.id}')">🗑️</button>
+                    </div>
+                </div>
+                
+                ${report.personnel && report.personnel.length > 0 ? `
+                    <div class="report-personnel-info">
+                        <strong>👥 پرسنل حاضر:</strong><br>
+                        ${report.personnel.map(p => `${p.name} (${p.position || 'بدون سمت'} - شیفت ${p.shift || 'نامشخص'})`).join('<br>')}
+                    </div>
+                ` : ''}
+                
+                ${report.strengths.length > 0 ? `
+                    <div class="strengths-section">
+                        <h4>✅ نقاط قوت</h4>
+                        ${report.strengths.map(s => `<div class="report-item">${s}</div>`).join('')}
+                    </div>
+                ` : ''}
+                
+                ${report.weaknesses.length > 0 ? `
+                    <div class="weaknesses-section">
+                        <h4>⚠️ نقاط ضعف</h4>
+                        ${report.weaknesses.map(w => `<div class="report-item">${w}</div>`).join('')}
+                    </div>
+                ` : ''}
+            </div>
+        `).join('');
+    }
+
+    function screenshotReport(reportId) {
+        const element = document.getElementById(`report-${reportId}`);
+        if (!element) return;
+
+        html2canvas(element, {
+            backgroundColor: '#ffffff',
+            scale: 2,
+            useCORS: true
+        }).then(canvas => {
+            const link = document.createElement('a');
+            const report = reports.find(r => r.id === reportId);
+            link.download = `report-${report ? report.storeName : 'unknown'}-${new Date().toISOString().slice(0, 10)}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }).catch(err => {
+            alert('خطا در تهیه اسکرین‌شات!');
+            console.error(err);
+        });
+    }
+
+    function deleteReport(reportId) {
+        if (confirm('این گزارش حذف شود؟')) {
+            reports = reports.filter(r => r.id !== reportId);
+            saveVisitData();
+            renderSavedReports();
+        }
+    }
+
+    function renderStoreList() {
+        const list = document.getElementById('storeList');
+        if (stores.length === 0) {
+            list.innerHTML = '<div style="padding:15px; text-align:center; color:#aaa; font-size:0.8rem;">هیچ فروشگاهی اضافه نشده</div>';
+            return;
+        }
+        list.innerHTML = stores.map((store, idx) => `
+            <div class="simple-list-item">
+                <span>${store}</span>
+                <button class="delete" onclick="deleteStore(${idx})">✕</button>
+            </div>
+        `).join('');
+    }
+
+    function addStore() {
+        const input = document.getElementById('newStoreInput');
+        const name = input.value.trim();
+        if (name && !stores.includes(name)) {
+            stores.push(name);
+            saveVisitData();
+            renderStoreList();
+            renderStoreSelector();
+            renderChecklistTable();
+            input.value = '';
+        } else if (stores.includes(name)) {
+            alert('این فروشگاه قبلا اضافه شده!');
+        }
+    }
+
+    function deleteStore(idx) {
+        if (confirm('این فروشگاه حذف شود؟')) {
+            const storeName = stores[idx];
+            stores.splice(idx, 1);
+            Object.keys(checklistData).forEach(key => {
+                if (key.startsWith(storeName + '|')) delete checklistData[key];
+            });
+            delete storeControlData[storeName];
+            saveVisitData();
+            renderStoreList();
+            renderStoreSelector();
+            renderChecklistTable();
+        }
+    }
+
+    function renderBarcodeList() {
+        const list = document.getElementById('barcodeList');
+        if (barcodes.length === 0) {
+            list.innerHTML = '<div style="padding:15px; text-align:center; color:#aaa; font-size:0.8rem;">هیچ بارکدی اضافه نشده</div>';
+            return;
+        }
+        list.innerHTML = barcodes.map((bc, idx) => `
+            <div class="simple-list-item">
+                <span>${bc.name} - ${bc.code}</span>
+                <button class="delete" onclick="deleteBarcode(${idx})">✕</button>
+            </div>
+        `).join('');
+    }
+
+    function addBarcode() {
+        const nameInput = document.getElementById('newBarcodeName');
+        const codeInput = document.getElementById('newBarcodeCode');
+        const name = nameInput.value.trim();
+        const code = codeInput.value.trim();
+        
+        if (name && code) {
+            barcodes.push({ name, code });
+            saveVisitData();
+            renderBarcodeList();
+            nameInput.value = '';
+            codeInput.value = '';
+        } else {
+            alert('لطفا نام و کد بارکد را وارد کنید!');
+        }
+    }
+
+    function deleteBarcode(idx) {
+        if (confirm('این بارکد حذف شود؟')) {
+            barcodes.splice(idx, 1);
+            saveVisitData();
+            renderBarcodeList();
+        }
+    }
+
+    function renderIndicatorList() {
+        const list = document.getElementById('indicatorList');
+        if (customIndicators.length === 0) {
+            list.innerHTML = '<div style="padding:15px; text-align:center; color:#aaa; font-size:0.8rem;">هیچ شاخص اضافی تعریف نشده</div>';
+            return;
+        }
+        list.innerHTML = customIndicators.map((ind, idx) => `
+            <div class="simple-list-item">
+                <span>${ind}</span>
+                <button class="delete" onclick="deleteIndicator(${idx})">✕</button>
+            </div>
+        `).join('');
+    }
+
+    function addIndicator() {
+        const input = document.getElementById('newIndicatorInput');
+        const name = input.value.trim();
+        if (name && !customIndicators.includes(name)) {
+            customIndicators.push(name);
+            saveVisitData();
+            renderIndicatorList();
+            input.value = '';
+        } else if (customIndicators.includes(name)) {
+            alert('این شاخص قبلا اضافه شده!');
+        }
+    }
+
+    function deleteIndicator(idx) {
+        if (confirm('این شاخص حذف شود؟')) {
+            customIndicators.splice(idx, 1);
+            saveVisitData();
+            renderIndicatorList();
+        }
+    }
+
+    function openResetModal() {
+        const html = `
+            <div class="modal-title">⚠️ ریست کامل برنامه</div>
+            <p style="font-size:0.9rem; color:#d9534f; margin-bottom:20px;">هشدار: تمام داده‌ها پاک خواهند شد!</p>
+            <div class="modal-actions">
+                <button class="btn btn-danger" onclick="confirmReset()">بله، ریست کن</button>
+                <button class="btn btn-primary" onclick="closeModal()">لغو</button>
+            </div>
+        `;
+        openModal(html);
+    }
+
+    function confirmReset() {
+        localStorage.clear();
+        closeModal();
+        alert('برنامه با موفقیت ریست شد!');
+        location.reload();
+    }
+
+    function exportData() {
+        const data = {
+            tasks, notes, quotes, stores, barcodes, customIndicators, reports,
+            checklistData, storeControlData,
+            exportDate: new Date().toISOString(),
+            version: '5.1'
+        };
+        
+        const jsonStr = JSON.stringify(data, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `backup-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (confirm('تمام داده‌های فعلی با بکاپ جایگزین می‌شوند. مطمئن هستید؟')) {
+                    if (data.tasks) { tasks = data.tasks; saveTasksToStorage(); }
+                    if (data.quotes) { quotes = data.quotes; saveQuotesToStorage(); }
+                    if (data.notes) { notes = data.notes; saveNotesToStorage(); }
+                    if (data.stores) stores = data.stores;
+                    if (data.barcodes) barcodes = data.barcodes;
+                    if (data.customIndicators) customIndicators = data.customIndicators;
+                    if (data.reports) reports = data.reports;
+                    if (data.checklistData) checklistData = data.checklistData;
+                    if (data.storeControlData) storeControlData = data.storeControlData;
+                    saveVisitData();
+                    alert('بکاپ بازیابی شد!');
+                    location.reload();
+                }
+            } catch (err) {
+                alert('خطا در خواندن فایل!');
+            }
+            event.target.value = '';
+        };
+        reader.readAsText(file);
+    }
+
+    function switchTab(tabName, event) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabName + '-tab').classList.add('active');
+        if(event) event.target.classList.add('active');
+    }
+
+    // ====== ثبت Service Worker به صورت Inline برای پشتیبانی از PWA ======
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            const swCode = `
+                const CACHE_NAME = 'task-manager-v1';
+                self.addEventListener('install', (e) => {
+                    self.skipWaiting();
+                });
+                self.addEventListener('activate', (e) => {
+                    e.waitUntil(self.clients.claim());
+                });
+                self.addEventListener('fetch', (e) => {
+                    e.respondWith(
+                        caches.match(e.request).then((response) => {
+                            return response || fetch(e.request).catch(() => caches.match('/'));
+                        })
+                    );
+                });
+            `;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            
+            navigator.serviceWorker.register(swUrl).then(() => {
+                console.log('Service Worker ثبت شد');
+            }).catch(err => {
+                console.log('خطا در ثبت Service Worker:', err);
+            });
+        });
+    }
+
+    window.onload = () => {
+        document.getElementById('shamsi-date').textContent = getShamsiDate();
+        loadTasks();
+        loadNotes();
+        loadQuotes();
+        loadVisitData();
+
+        document.getElementById('modalOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'modalOverlay') {
+                if (currentEditingNoteId) {
+                    saveCurrentNote();
+                    currentEditingNoteId = null;
+                }
+                closeModal();
+            }
+        });
+
+        tasks.forEach(task => {
+            if (task.timerEnd && !task.timerExpired) {
+                const remaining = Math.max(0, Math.floor((task.timerEnd - Date.now()) / 1000));
+                if (remaining > 0) {
+                    const id = task.id;
+                    activeTimers[id] = setInterval(() => {
+                        const rem = Math.max(0, Math.floor((task.timerEnd - Date.now()) / 1000));
+                        const timerSpan = document.getElementById(`timer-${id}`);
+                        if (timerSpan) timerSpan.textContent = `⏱️ ${formatTime(rem)}`;
+                        if (rem <= 0) {
+                            clearInterval(activeTimers[id]);
+                            delete activeTimers[id];
+                            task.timerEnd = null;
+                            task.timerTotal = 0;
+                            task.timerExpired = true;
+                            saveTasksToStorage();
+                            alert(`زمان تسک "${task.text}" به پایان رسید!`);
+                            renderTasks();
+                        }
+                    }, 1000);
+                } else {
+                    task.timerEnd = null;
+                    task.timerTotal = 0;
+                    task.timerExpired = true;
+                }
+            }
+        });
+        saveTasksToStorage();
+        renderTasks();
+    };
+</script>
+
+</body>
+</html>
